@@ -323,4 +323,4 @@ F5 または デバック＞デバックの開始 をクリックして、プロ
 こちらを Visual Studio から Azure Bot Service にデプロイ (アップロード) すると、作成した BOT を公開できます。
 
 完成形のソースコードは GitHub にて公開しています。
-https://github.com/ayako/AAJP-EmotionBotHoL/source/CSharp
+https://github.com/ayako/AAJP-EmotionBotHoL/tree/master/source/CSharp
