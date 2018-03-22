@@ -78,8 +78,8 @@ request: HTTPリクエストを扱う際に便利なモジュール
 その中に Bot の情報保持用の Azure Storage の設定、および Face API の URL, キー を設定を追加します。
 
 ```.env
-FACE_API_URL="https://westus.api.cognitive.microsoft.com/face/v1.0"
-FACE_API_KEY="0b81a4db646c48d2bee7394811e35c55"
+FACE_API_URL="YOUR_FACE_API_ENDPOINT"
+FACE_API_KEY="YOUR_FACE_API_KEY"
 AzureWebJobsStorage="YOUR_STORAGE_CONNECTION_STRING"
 ```
 
@@ -121,8 +121,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
             // CASE_2: 8 種類の表情判定
 
         session.send(msg);
-
-        });
 
     // 画像がない場合
     } else {
