@@ -114,6 +114,7 @@ Face API のライブラリーと、依存関係のあるライブラリーが�
     <add key="MicrosoftAppPassword" value="" />
     <!-- ストレージの接続文字列 および Face API Key を入力 -->
     <add key="AzureWebJobsStorage" value="YOUR_STORAGE_CONNECTION_STRING" />
+    <add key="FaceApiEndpoint" value="YOUR_FACE_API_ENDPOINT" />
     <add key="FaceApiKey" value="YOUR_FACE_API_KEY" />
   </appSettings>
     :(後略)
@@ -192,7 +193,8 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
     {
         //protected int count = 1;
 
-        //[ja] Web.config で設定した Face API Key を取得
+        //[ja] Web.config で設定した Face API Endpoint, Face API Key を取得
+        readonly string faceApiEndpoint = ConfigurationManager.AppSettings["FaceApiEndpoint"];
         readonly string faceApiKey = ConfigurationManager.AppSettings["FaceApiKey"];
 
         public async Task StartAsync(IDialogContext context)
@@ -232,7 +234,7 @@ public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessa
 {
     :(中略)
         // [ja] FaceAPI で表情を分析
-        var faceClient = new FaceServiceClient(faceApiKey);
+        var faceClient = new FaceServiceClient(faceApiKey, faceApiEndpoint);
         var faceResult = await faceClient.DetectAsync(
                     photoStream,
                     returnFaceId: true,
