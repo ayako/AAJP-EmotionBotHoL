@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using System.Net.Http;
 
 // [en] Added Cognitive Services Face API related libraries
-// [ja] Cognitive Services Face API ŠÖ˜Aƒ‰ƒCƒuƒ‰ƒŠ[’Ç‰Á
+// [ja] Cognitive Services Face API é–¢é€£ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ¼è¿½åŠ 
 using Microsoft.ProjectOxford.Face;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,8 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
     public class EchoDialog : IDialog<object>
     {
         //[en] Get Face API Key from Web.config
-        //[ja] Web.config ‚Åİ’è‚µ‚½ Face API Key ‚ğæ“¾
+        //[ja] Web.config ã§è¨­å®šã—ãŸ Face API Endpoint, Face API Key ã‚’å–å¾—
+        readonly string faceApiEndpoint = ConfigurationManager.AppSettings["FaceApiEndpoint"];
         readonly string faceApiKey = ConfigurationManager.AppSettings["FaceApiKey"];
 
         public async Task StartAsync(IDialogContext context)
@@ -32,22 +33,22 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
             var message = await argument as Activity;
 
             // [en] Set bot message | default when no attachment
-            // [ja] Bot‚©‚ç‚Ì•Ô“š‚ğİ’è | attachment ‚ª‚È‚¢ê‡‚Í‰ŠúƒƒbƒZ[ƒW
-            var result = $"•\î”»’è BOT‚Å‚·B\n Ê^‚ğ‘—‚é‚ÆAÊ‚Á‚Ä‚¢‚él‚Ì•\î‚ğ”»’è‚µ‚Ü‚·B";
+            // [ja] Botã‹ã‚‰ã®è¿”ç­”ã‚’è¨­å®š | attachment ãŒãªã„å ´åˆã¯åˆæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+            var result = $"è¡¨æƒ…åˆ¤å®š BOTã§ã™ã€‚\n å†™çœŸã‚’é€ã‚‹ã¨ã€å†™ã£ã¦ã„ã‚‹äººã®è¡¨æƒ…ã‚’åˆ¤å®šã—ã¾ã™ã€‚";
 
             // [en] When attachment(photo) attached
-            // [ja] attachment(Ê^) ‚ª‘—‚ç‚ê‚Ä‚«‚½ê‡
+            // [ja] attachment(å†™çœŸ) ãŒé€ã‚‰ã‚Œã¦ããŸå ´åˆ
             if (message.Attachments?.Count != 0)
             {
                 // [en] Get photo as stream from attachment url
-                // [ja] attachment ‚Ì URL ‚©‚ç‰æ‘œ‚ğ Stream ‚Æ‚µ‚Äæ“¾
+                // [ja] attachment ã® URL ã‹ã‚‰ç”»åƒã‚’ Stream ã¨ã—ã¦å–å¾—
                 var photoUrl = message.Attachments[0].ContentUrl;
                 var client = new HttpClient();
                 var photoStream = await client.GetStreamAsync(photoUrl);
 
                 // [en] Detect emotion by Face API
-                // [ja] FaceAPI ‚Å•\î‚ğ•ªÍ
-                var faceClient = new FaceServiceClient(faceApiKey);
+                // [ja] FaceAPI ã§è¡¨æƒ…ã‚’åˆ†æ
+                var faceClient = new FaceServiceClient(faceApiKey, faceApiEndpoint);
                 var faceResult = await faceClient.DetectAsync(
                             photoStream,
                             returnFaceId: true,
@@ -56,47 +57,47 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
                             );
 
                 // [en] Success to get emotion scores
-                // [ja] •ªÍŒ‹‰Ê‚ªæ“¾‚Å‚«‚½ê‡
+                // [ja] åˆ†æçµæœãŒå–å¾—ã§ããŸå ´åˆ
                 try
                 {
                     // [en] Get all emotion scores
-                    // [ja] Še Emotion ‚ÌƒXƒRƒA‚ğæ“¾
+                    // [ja] å„ Emotion ã®ã‚¹ã‚³ã‚¢ã‚’å–å¾—
                     var emotion = faceResult[0].FaceAttributes.Emotion;
 
                     //// [en] CASE_1: Happiness score
-                    //// [ja] CASE_1: ÎŠç”»’è
+                    //// [ja] CASE_1: ç¬‘é¡”åˆ¤å®š
                     //var score = emotion.Happiness;
-                    //result = $"‚±‚ÌÊ^‚Í ÎŠç " + (int)(score * 100) + "% ‚Å‚·B";
+                    //result = $"ã“ã®å†™çœŸã¯ ç¬‘é¡” " + (int)(score * 100) + "% ã§ã™ã€‚";
 
                     // [en] CASE_2: 8 kinds of emotion scores
-                    // [ja] CASE_2: 8 í—Ş‚Ì•\î”»’è
+                    // [ja] CASE_2: 8 ç¨®é¡ã®è¡¨æƒ…åˆ¤å®š
                     var emotionResult = new Dictionary<string, float>()
                     {
-                        { "“{‚Á‚Ä‚¢‚é", emotion.Anger},
-                        { "Œy•Ì‚µ‚Ä‚¢‚é", emotion.Contempt },
-                        { "‚¤‚ñ‚´‚è‚µ‚Ä‚¢‚é", emotion.Disgust },
-                        { "•|‚ª‚Á‚Ä‚¢‚é", emotion.Fear },
-                        { "Šy‚µ‚¢", emotion.Happiness},
-                        { "’†—§‚Ì", emotion.Neutral},
-                        { "”ß‚µ‚ñ‚Å‚¢‚é", emotion.Sadness },
-                        { "‹Á‚¢‚Ä‚¢‚é", emotion.Surprise}
+                        { "æ€’ã£ã¦ã„ã‚‹", emotion.Anger},
+                        { "è»½è”‘ã—ã¦ã„ã‚‹", emotion.Contempt },
+                        { "ã†ã‚“ã–ã‚Šã—ã¦ã„ã‚‹", emotion.Disgust },
+                        { "æ€–ãŒã£ã¦ã„ã‚‹", emotion.Fear },
+                        { "æ¥½ã—ã„", emotion.Happiness},
+                        { "ä¸­ç«‹ã®", emotion.Neutral},
+                        { "æ‚²ã—ã‚“ã§ã„ã‚‹", emotion.Sadness },
+                        { "é©šã„ã¦ã„ã‚‹", emotion.Surprise}
                     }
                             .OrderByDescending(kv => kv.Value)
                             .ThenBy(kv => kv.Key)
                             .ToList();
 
-                            result = $"‚±‚ÌÊ^‚Í " + emotionResult.First().Key + " •\î‚ÉŒ©‚¦‚Ü‚·B(score: " + (int)(emotionResult.First().Value * 100) + "%)";
+                            result = $"ã“ã®å†™çœŸã¯ " + emotionResult.First().Key + " è¡¨æƒ…ã«è¦‹ãˆã¾ã™ã€‚(score: " + (int)(emotionResult.First().Value * 100) + "%)";
 
                 }
 
-                // [ja] •ªÍŒ‹‰Ê‚ªæ“¾‚Å‚«‚È‚¢ê‡
+                // [ja] åˆ†æçµæœãŒå–å¾—ã§ããªã„å ´åˆ
                 catch
                 {
-                    result = $"•\î‚ğ”»’è‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B";
+                    result = $"è¡¨æƒ…ã‚’åˆ¤å®šã§ãã¾ã›ã‚“ã§ã—ãŸã€‚";
                 }
             }
 
-            // [ja] Bot‚©‚ç•Ô“š‘—M
+            // [ja] Botã‹ã‚‰è¿”ç­”é€ä¿¡
             await context.PostAsync(result);
             context.Wait(MessageReceivedAsync);
         }
