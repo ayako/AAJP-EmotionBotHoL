@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
     [Serializable]
     public class EchoDialog : IDialog<object>
     {
-        //[en] Get Face API Key from Web.config
+        //[en] Get Face API Endpoint, Face API Key from Web.config
         //[ja] Web.config で設定した Face API Endpoint, Face API Key を取得
         readonly string faceApiEndpoint = ConfigurationManager.AppSettings["FaceApiEndpoint"];
         readonly string faceApiKey = ConfigurationManager.AppSettings["FaceApiKey"];
