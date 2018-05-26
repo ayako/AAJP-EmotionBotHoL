@@ -227,7 +227,7 @@ Bot Framework Channel Emulator の上部中央にある *Bot Url* に、起動�
 
 # Face API を呼び出すロジックの記述
 先ほど設定した Face API Key を使って FaceServiceClient を作成、FaceServiceClient.DetectAsync で呼び出して、得られる結果を faceResult に取得します。
-まず、faceResult に取得した Happoness のスコアを取得してメッセージに設定します。
+まず、faceResult に取得した happiness のスコアを取得してメッセージに設定します。
 
 ```EchoDialog.cs
 public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)

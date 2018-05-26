@@ -180,7 +180,7 @@ var bot = new builder.UniversalBot(connector, function (session) {
 ```
 
 
-まず、response に取得した Happoness のスコアを取得してメッセージに設定します。
+まず、response に取得した happiness のスコアを取得してメッセージに設定します。
 
 ```app.js
 var bot = new builder.UniversalBot(connector, function (session) {
