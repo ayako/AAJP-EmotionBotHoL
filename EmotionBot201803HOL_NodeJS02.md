@@ -27,15 +27,15 @@ Cognitive Services の一つである Face API では、画像を分析して人
 Azure Portal で [1. Azure Portal から Azure Bot Service の作成 (Node.JS 編)](EmotionBot201803HOL_NodeJS01.md) で作成した Azure Bot Service を参照し、Web App Bot の設定ペインのメニューから **ビルド** をクリックします。
 **zipファイルをダウンロード** をクリックすると、Zip ファイルの形でダウンロードできます。
 
-<img src="/media/20180313_10.PNG" width="500">
+<img src="/media/20180527_01.png" width="500">
 
 **zipファイルをダウンロード** が表示されたらクリックして、ソースコードをダウンロードします。
 
-<img src="/media/20180313_16.PNG" width="500"><img src="/media/20180313_17.PNG" width="500">
+<img src="/media/20180527_02.png" width="500"><img src="/media/20180527_03.png" width="500">
 
 **保存** をクリックして、ローカル環境にソースコードを保存します。
 
-<img src="/media/20180313_18.PNG" width="500">
+<img src="/media/20180527_04.png" width="500">
 
 ダウンロードしたソースコード (Zip ファイル) を右クリックして、[すべて展開] を選択して展開します。
 
@@ -62,15 +62,22 @@ Azure Portal で [1. Azure Portal から Azure Bot Service の作成 (Node.JS �
 # Bot 開発に必要な ライブラリーのインストール
 ローカル環境にないライブラリーをインストールします。
 
-```
-$ npm install --save botbuilder botbuilder-azure restify dotenv request
+```bash
+# ソースコードのディレクトリに移動する
+cd <ボットの名前>-src
+
+# package.json の dependencies のパッケージのみインストールする
+npm install --only=prod
+
+# 追加のパッケージを devDependencies としてインストールする
+npm install --save-dev request dotenv
 ```
 
->botbuilder: Microsoft Bot Framework ベースのBOT SDK
-botbuilder-azure: Azure への接続を行う SDK
-restify: REST形式のwebサービス構築に特化したフレームワーク
-dotenv: 環境変数を扱う際に便利なモジュール
-request: HTTPリクエストを扱う際に便利なモジュール
+> - botbuilder: Microsoft Bot Framework ベースのBOT SDK
+> - botbuilder-azure: Azure への接続を行う SDK
+> - restify: REST形式のwebサービス構築に特化したフレームワーク
+> - request: HTTPリクエストを扱う際に便利なモジュール
+> - dotenv: 環境変数を扱う際に便利なモジュール
 
 
 # Bot の情報保持用ストレージ および Face API キーの設定
@@ -83,12 +90,11 @@ FACE_API_KEY="YOUR_FACE_API_KEY"
 AzureWebJobsStorage="YOUR_STORAGE_CONNECTION_STRING"
 ```
 
-- YOUR_STORAGE_CONNECTION_STRING
-1. Azure Portal から Azure Bot Service の作成 (C# 編) の [Azure Bot Service アプリの Bot Channel 関連設定](https://github.com/ayako/AAJP-EmotionBotHoL/blob/master/EmotionBot201803HOL_Node.JS01.md#azure-bot-service-%E3%82%A2%E3%83%97%E3%83%AA%E3%81%AE-bot-channel-%E9%96%A2%E9%80%A3%E8%A8%AD%E5%AE%9A) で保存した AzureWebsStorage の設定文字列
-- YOUR_FACE_API_URL, YOUR_FACE_API_KEY
-[Cognitive Services の無料サブスクリプションの申し込み方法](CognitiveSubscriptionTrial.md) の手順で取得した Face API のエンドポイント(URL) と
-Face API キー
-
+| 値 | 説明 |
+|---|--|
+| YOUR_FACE_API_URL | [Cognitive Services の無料サブスクリプションの申し込み方法](CognitiveSubscriptionTrial.md) の手順で取得した Face API のエンドポイント(URL) |
+| YOUR_FACE_API_KEY | [同上](CognitiveSubscriptionTrial.md) の手順で取得した Face API の Face API キー |
+| YOUR_STORAGE_CONNECTION_STRING | 1. Azure Portal から Azure Bot Service の作成 (Node.JS 編) の [Azure Bot Service アプリの Bot Channel 関連設定](https://github.com/ayako/AAJP-EmotionBotHoL/blob/master/EmotionBot201803HOL_NodeJS01.md#azure-bot-service-アプリの-bot-channel-関連設定) で保存した AzureWebsStorage の設定文字列 |
 
 *.env* を保存します。
 
@@ -98,15 +104,29 @@ Face API キー
 
 冒頭に、先ほど追加した ライブラリー を追加します。
 
-```app.js
+```js:app.js
 require('dotenv').config();
 var request = require('request');
 ```
 
-デフォルトで記述されている **var bot = new builder.UniversalBot(connector);** ～ファイル末尾 の部分を削除し、下記の通り置き換えます。
-こちらには、ユーザーから Bot に対してメッセージ(画像などの添付ファイルを含む)が送られた時の処理を記載します。
+次に、ファイル末尾の下記の処理を削除します。
 
-```app.js
+```js:app.js
+// bot.set('storage', tableStorage);
+
+// bot.dialog('/', function (session) {
+//     session.send('You said ' + session.message.text);
+// });
+```
+
+そして、以降 `var bot = new builder.UniversalBot(connector);` を書き換えていきます。この処理は、ユーザーから Bot に対してメッセージ(画像などの添付ファイルを含む)が送られた時の処理です。
+
+まずは、下記のように編集してください。
+
+```js:app.js
+// // Create your bot with a function to receive messages from the user
+// var bot = new builder.UniversalBot(connector);
+
 var bot = new builder.UniversalBot(connector, function (session) {
 
     // Botからの返答を設定 | attachment がない場合は初期メッセージ
@@ -125,15 +145,34 @@ var bot = new builder.UniversalBot(connector, function (session) {
     // 画像がない場合
     } else {
         session.send(msg);
-    }        
+    }
 });
 ```
 
 忘れずに *app.js* を保存します。
 
 ## BOT の動作確認
-ここで一旦 BOT の動作確認を行います。作成した Node.JS アプリケーションのビルドおよび起動を行います。その後、Bot Framework Channel Emulator を起動してアクセスを行います。
-Bot Framework Channel Emulator の上部中央にある *Bot Url* に、起動しているブラウザと同じ URL (デフォルトでは http://localhost:3978) に **/api/messages** を追加したアドレス (http://localhost:3978/api/messages) を指定します。
+ここで一旦 BOT の動作確認を行いましょう。
+
+まず、作成した Node.JS アプリケーションを実行します。
+
+ここでは、コマンドラインからの実行で進めます。ターミナル（シェル、コマンドプロンプトなど）を開き、下記を実行してください。
+
+```bash
+node app.js
+```
+
+すると、下記のようにアプリケーションの URL とポート番号が表示されます。この場合、このアプリケーションにアクセスするには、 `http://localhost:3978` というURLを用います。
+
+```bash
+restify listening to http://[::]:3978
+```
+
+その後、Bot Framework Channel Emulator を起動してアクセスを行います。
+
+Bot Framework Channel Emulator の上部中央にある *Enter your endpont URL* の欄に `http://上記のアプリケーションのURL:ポート/api/messages` を入力し、 [CONNECT] をクリックしましょう。
+
+- 例: `http://localhost:3978/api/messages`
 
 <img src="/media/20180313_32n.PNG" width="300">
 
@@ -143,9 +182,14 @@ Bot Framework Channel Emulator の上部中央にある *Bot Url* に、起動�
 
 
 # Face API を呼び出すロジックの記述
-先ほど設定した Face API Key を使って FaceApiRequestOption を作成、Web API で呼び出して、得られる結果を response に取得します。
 
-```app.js
+ふたたび、 `var bot = new builder.UniversalBot(connector);` の内容を編集します。
+
+まず、 `// FaceAPI で表情を分析` の部分に処理を加えましょう。
+
+先ほど設定した Face API Key を使って `FaceApiRequestOption` を作成し、Web API で呼び出します。得られる結果を `response` に格納します。
+
+```js:app.js
 var bot = new builder.UniversalBot(connector, function (session) {
     :(中略)
         // FaceAPI で表情を分析
@@ -168,21 +212,21 @@ var bot = new builder.UniversalBot(connector, function (session) {
                 // CASE_1: 笑顔判定
                 // CASE_2: 8 種類の表情判定
 
-        session.send(msg);
+            session.send(msg);
 
         });
 
     // 画像がない場合
     } else {
         session.send(msg);
-    }        
+    }
 });
 ```
 
 
-まず、response に取得した happiness のスコアを取得してメッセージに設定します。
+つぎに、 `// 分析結果が取得できた場合` を編集します。 `response` から `happiness` のスコアを取得し、メッセージを設定します。
 
-```app.js
+```js:app.js
 var bot = new builder.UniversalBot(connector, function (session) {
     :(中略)
         request.post(FaceApiRequestOptions, function (error, response, body) {
@@ -193,33 +237,55 @@ var bot = new builder.UniversalBot(connector, function (session) {
                 // CASE_1: 笑顔判定
                 var score = response.body[0].faceAttributes.emotion.happiness;
                 msg = "この写真は 笑顔 " + (score.toFixed(2) * 100) + "% です。";
-                session.send(msg);
 
                 // CASE_2: 8 種類の表情判定
 
-        session.send(msg);
+            } else {
+                msg = "表情を判定できませんでした。";
+            }
 
+            session.send(msg);
         });
 
     // 画像がない場合
     } else {
         session.send(msg);
-    }        
+    }
 });
 ```
 
 
 ## Bot アプリケーションの動作確認 (Happiness スコアの表示)
-ここでもう一度 BOT の動作確認を行います。、F5 または デバック＞デバックの開始 をクリックして、プロジェクトのビルドおよび起動を行います。ブラウザが起動して Bot Framework のデフォルト画面が表示されたら、Bot Framework Channel Emulator からアクセスを行います。
+ここでもう一度 BOT の動作確認を行います。
+
+ふたたび、アプリケーションを実行します。*app.js* が実行中の場合は、まず停止してください。
+
+> コマンドラインで実行中のアプリケーションを停止するには、 *ctrl + c* を入力します。
+
+
+```bash
+# 実行中の場合は、ctrl + c で停止する
+
+# ふたたび app.js を実行する
+node app.js
+```
+
+アプリケーションを再実行できたら、Bot Framework Channel Emulator で動作を確認します。
+
 画像アイコンをクリックしてローカルの画像を選択し、Bot に送信すると、Happiness のスコアが返答されるのを確認してください。
 
 <img src="/media/20180313_34n.PNG" width="300">
 
 
 # 8 種類の表情スコアを回答にセットするロジックの記述
-今度は得られた 8 種類の表情スコアを取得して回答にセットします。先ほどの Happiness スコアの取得と表示はコメントアウトします。
 
-```app.js
+今度は、`// 分析結果が取得できた場合` の `// CASE_2: 8 種類の表情判定` を編集します。
+
+まず、 `CASE_1: 笑顔判定` をコメントアウトし、その下の `case_2` に処理を追加してください。
+
+この処理は、得られた 8 種類の表情スコアを取得して回答にセットします。
+
+```js:app.js
 var bot = new builder.UniversalBot(connector, function (session) {
     :(中略)
         request.post(FaceApiRequestOptions, function (error, response, body) {
@@ -230,7 +296,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
                 // CASE_1: 笑顔判定
                 //var score = response.body[0].faceAttributes.emotion.happiness;
                 //msg = "この写真は 笑顔 " + (score.toFixed(2) * 100) + "% です。";
-                //session.send(msg);
 
                 // CASE_2: 8 種類の表情判定
                 var emotion = response.body[0].faceAttributes.emotion;
@@ -244,16 +309,18 @@ var bot = new builder.UniversalBot(connector, function (session) {
                         + "- 悲しい　: " + (emotion.sadness.toFixed(2) * 100) + "%\n\n"
                         + "- 驚き　　: " + (emotion.surprise.toFixed(2) * 100) + "%\n\n"
                         + "という表情に見えます。";
-                session.send(msg);
 
-        session.send(msg);
+            } else {
+                msg = "表情を判定できませんでした。";
+            }
 
+            session.send(msg);
         });
 
     // 画像がない場合
     } else {
         session.send(msg);
-    }        
+    }
 });
 ```
 
@@ -261,7 +328,8 @@ var bot = new builder.UniversalBot(connector, function (session) {
 忘れずに *app.js* を保存しておきます。
 
 # BOT アプリケーションの最終動作確認
-F5 または デバック＞デバックの開始 をクリックして、プロジェクトのビルドおよび起動を行います。ブラウザが起動して Bot Framework のデフォルト画面が表示されたら、Bot Framework Channel Emulator を起動してアクセスを行います。
+再度アプリケーションを再実行し、Bot Framework Channel Emulator で動作を確認します。
+
 まず何かメッセージを入力すると、デフォルトの回答が返信されます。
 
 その後、画像を送信して、8つの感情が回答として返信されれば、BOT アプリケーションは完成です。

@@ -13,9 +13,9 @@ var request = require('request');
 // Setup Restify Server
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url); 
+   console.log('%s listening to %s', server.name, server.url);
 });
-  
+
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: process.env.MicrosoftAppId,
@@ -23,7 +23,7 @@ var connector = new builder.ChatConnector({
     openIdMetadata: process.env.BotOpenIdMetadata
 });
 
-// Listen for messages from users 
+// Listen for messages from users
 server.post('/api/messages', connector.listen());
 
 /*----------------------------------------------------------------------------------------
@@ -70,7 +70,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
                 // [ja] CASE_1: 笑顔判定
                 //var score = response.body[0].faceAttributes.emotion.happiness;
                 //msg = "この写真は 笑顔 " + (score.toFixed(2) * 100) + "% です。";
-                //session.send(msg);                
 
                 // [en] CASE_2: 8 kinds of emotion scores
                 // [ja] CASE_2: 8 種類の表情判定
@@ -85,18 +84,16 @@ var bot = new builder.UniversalBot(connector, function (session) {
                         + "- 悲しい　: " + (emotion.sadness.toFixed(2) * 100) + "%\n\n"
                         + "- 驚き　　: " + (emotion.surprise.toFixed(2) * 100) + "%\n\n"
                         + "という表情に見えます。";
-                        
-                session.send(msg);
 
             } else {
                 msg = "表情を判定できませんでした。";
-                session.send(msg);
-            }        
-    
+            }
+
+            session.send(msg);
         });
 
     // 画像がない場合
     } else {
         session.send(msg);
-    }        
+    }
 });
