@@ -94,7 +94,7 @@ AzureWebJobsStorage="YOUR_STORAGE_CONNECTION_STRING"
 |---|--|
 | YOUR_FACE_API_URL | [Cognitive Services の無料サブスクリプションの申し込み方法](CognitiveSubscriptionTrial.md) の手順で取得した Face API のエンドポイント(URL) |
 | YOUR_FACE_API_KEY | [同上](CognitiveSubscriptionTrial.md) の手順で取得した Face API の Face API キー |
-| YOUR_STORAGE_CONNECTION_STRING | 1. Azure Portal から Azure Bot Service の作成 (Node.JS 編) の [Azure Bot Service アプリの Bot Channel 関連設定](https://github.com/ayako/AAJP-EmotionBotHoL/blob/master/EmotionBot201803HOL_NodeJS01.md#azure-bot-service-アプリの-bot-channel-関連設定) で保存した AzureWebsStorage の設定文字列 |
+| YOUR_STORAGE_CONNECTION_STRING | 1. Azure Portal から Azure Bot Service の作成 (Node.JS 編) の [Azure Bot Service アプリの Bot Channel 関連設定](EmotionBot201803HOL_NodeJS01.md#azure-bot-service-アプリの-bot-channel-関連設定) で保存した AzureWebsStorage の設定文字列 |
 
 *.env* を保存します。
 
