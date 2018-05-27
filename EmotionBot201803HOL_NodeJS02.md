@@ -119,7 +119,7 @@ var request = require('request');
 // });
 ```
 
-そして、以降 `var bot = new builder.UniversalBot(connector);` を書き換えていきます。この処理は、ユーザーから Bot に対してメッセージ(画像などの添付ファイルを含む)が送られた時の処理です。
+そして、 `var bot = new builder.UniversalBot(connector);` を書き換えていきます。この処理は、ユーザーから Bot に対してメッセージ(画像などの添付ファイルを含む)が送られた時の処理です。
 
 まずは、下記のように編集してください。
 
