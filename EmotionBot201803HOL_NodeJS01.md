@@ -66,7 +66,7 @@ Web App Bot、Function Bot, Bot Channels Registration という同じ Bot マー
 
 今回は **Web App Bot** を選択、Web App Bot ペインで [作成] をクリックします。
 
-![](/media/20180313_04.PNG)
+![](/media/20180526_00.png)
 
 
 Bot Service ペインで設定内容を入力します。
@@ -87,10 +87,18 @@ Bot Service ペインで設定内容を入力します。
     - LUIS や QnA Maker を選択すると、同じマイクロソフトアカウントに紐づいている LUiS App や QnA Maker App を簡単に選択＆設定できます。(他のアカウントに紐づけているものも手動で設定可能です)
 - App Service Plan
     - 新規 (または作成済み) の Web App のプランを選択します。無料の Free Plan を利用可能です。
+- Azure Storage
+    - 新規作成、または既存を選択して、Azure Storage を指定します。
+- Application Insights
+    - 特筆はしませんが、オンを選択し有効化すると、通常の Web App と同様に分析データを取得することができます。
+- Applicaton Insights の場所
+    - Application Insights を有効にする場合、場所を指定します。
+Microsoft アプリIDとパスワード
+    - アプリ ID とパスワードを指定します。初期設定では自動作成が選択されておりますが、新規または既存のアプリIDを利用するには、新規作成からアプリIDを入力します。
 
 入力したら、[作成] をクリックして Bot アプリの作成を行います。
 
-![](/media/20180313_05n.PNG)
+![](/media/20180526_01.png)
 
 
 「展開が成功しました」というメッセージが表示されたら作成完了です。[リソースに移動] をクリックして、Bot アプリの設定確認とテストを行います。
@@ -99,25 +107,25 @@ Bot Service ペインで設定内容を入力します。
 
 
 ## Azure Bot Service アプリの設定確認＆テスト
-作成した Web App Bot の設定ペインが表示されます。
-概要ペインにメッセージングエンドポイントが表示されています。Bot Framework Emulrator を使ってテスト行う場合は、こちらの URL にアクセスします。
+作成した Web アプリ ボット の設定ペインが表示されます。
+概要ペインに **メッセージングエンドポイント** が表示されています。Bot Framework Emulrator を使ってテスト行う場合は、こちらの URL にアクセスします。
 
-![](/media/20180313_07.PNG)
+![](/media/20180526_02.png)
 
-設定ペインのメニューから Test in Web Chat をクリックすると、作成した Bot アプリ の動作確認を行うことができます。
+設定ペインのメニューから **Web チャットでテスト** をクリックすると、作成した Bot アプリ の動作確認を行うことができます。
 
-![](/media/20180313_08.PNG)
+![](/media/20180526_03.png)
 
 Basic テンプレートでは、入力した文字をそのまま返す (おうむ返し) が実装されています。
 
-![](/media/20180313_09n.PNG)
+![](/media/20180526_04.png)
 
 
 ## Azure Bot Service アプリのソースコード確認
 作成された Bot アプリのソースコードを確認します。
-Web App Bot の設定ペインのメニューから **ビルド** をクリックします。
+Web アプリ ボットの設定ペインのメニューから **ビルド** をクリックします。
 
-![](/media/20180313_10.PNG)
+![](/media/20180526_05.png)
 
 **オンラインコードエディターを開く** をクリックすると、ブラウザーの別タブでオンラインエディターが表示されます。
 ![](/media/20180313_11n.PNG)
@@ -158,4 +166,4 @@ Azure Bot Service のアプリケーション設定ペインで **アプリケ�
 
 次の [2. Azure Bot Service テンプレート を使った Bot Framework アプリの開発](EmotionBot201803HOL_NodeJS02.md) で使用するために、**AzureWebJobsStorage** の横に表示されている文字列 (DefaultEndpointsProtrol=https://~ で始まる文字列全部) をコピーして保存しておきます。
 
-![](/media/20180313_15.PNG)
+![](/media/20180526_06.png)
