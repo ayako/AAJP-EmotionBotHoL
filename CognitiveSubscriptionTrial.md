@@ -8,7 +8,7 @@ Cognitive Services は無料で試用できますが、予めサブスクリプ�
 - [Cognitive Services の 試用申し込みサイト](https://azure.microsoft.com/ja-jp/try/cognitive-services/) から申込
 - Microsoft / LinkedIn / GitHub / Facebook いずれかのアカウント に紐づけ
 
-**2. Free Tier(F0): (当面)無料の料金プラン**
+**[2. Free Tier(F0): (当面)無料の料金プラン](#2-azure-portal-から-free-tierf0-無料プラン-の申し込み方法)**
 - [Azure Portal](https://portal.azure.com/) から申込
 - Azure サブスクリプション & Microsoft アカウント に紐づけ
 
