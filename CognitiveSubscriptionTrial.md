@@ -4,7 +4,7 @@ Cognitive Services は無料で試用できますが、予めサブスクリプ�
 
 方法は2通りあります。
 
-**1. 30日間無料版**
+**[1. 30日間無料版](#1-30日間無料版の申し込み方法)**
 - [Cognitive Services の 試用申し込みサイト](https://azure.microsoft.com/ja-jp/try/cognitive-services/) から申込
 - Microsoft / LinkedIn / GitHub / Facebook いずれかのアカウント に紐づけ
 
